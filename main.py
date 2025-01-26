@@ -1,5 +1,7 @@
 import logging
 import argparse
+import os
+import subprocess
 from src.config import Config
 from src.exporter import BitwardenExporter
 from src.utils import check_cli_version
@@ -56,6 +58,18 @@ def main():
         logging.error(f"Unexpected error: {str(e)}")
         logging.debug("Exception details:", exc_info=True)
         return 1
+    finally:
+        session_path = config.get('session_path')
+        if session_path and os.path.exists(session_path):
+            os.remove(session_path)
+            logging.info(f"Session file {session_path} deleted")
+        
+        # Log out from Bitwarden
+        try:
+            subprocess.run([config.get('bw_cmd', 'bw'), 'logout'], check=True)
+            logging.info("Logged out from Bitwarden")
+        except Exception as e:
+            logging.error(f"Logout failed: {str(e)}")
 
     logging.info("Export process completed successfully")
     return 0
