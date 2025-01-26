@@ -1,0 +1,4 @@
+[bitwarden]
+client_id = <client_id>
+client_secret = <client_secret>
+session_path = .bw/session.txt
