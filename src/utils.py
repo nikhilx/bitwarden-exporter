@@ -5,15 +5,6 @@ import time
 from packaging import version
 
 def check_cli_version(cli_cmd='bw'):
-    """
-    Check Bitwarden CLI version and notify of updates.
-    
-    Args:
-        cli_cmd (str): CLI command name
-    
-    Returns:
-        bool: Update check status
-    """
     try:
         current = subprocess.run([cli_cmd, '--version'], capture_output=True, text=True)
         current_version = version.parse(current.stdout.strip())
@@ -49,29 +40,9 @@ def verify_cli():
         raise SystemError("Bitwarden CLI not found. Please install it first.")
 
 def sanitize_path(path):
-    """
-    Sanitize and validate file paths.
-    
-    Args:
-        path (str): Input path
-    
-    Returns:
-        str: Sanitized path
-    """
     return path.strip()
 
 def retry_with_backoff(func, retries=3, backoff_in_seconds=1):
-    """
-    Retry a function with exponential backoff.
-    
-    Args:
-        func (callable): Function to retry
-        retries (int): Number of retry attempts
-        backoff_in_seconds (int): Initial backoff time
-    
-    Returns:
-        Result of function or raises last exception
-    """
     last_exception = None
     for attempt in range(retries):
         try:
