@@ -57,7 +57,6 @@ class BitwardenAuth:
                 text=True
             )
 
-            logging.debug(f"Unlock result: {unlock_result.stdout}")
             if unlock_result.returncode != 0:
                 logging.error(f"Unlock failed: {unlock_result.stderr}")
                 return False
@@ -69,6 +68,7 @@ class BitwardenAuth:
             logging.debug(f"Session saved to: {self.config.get('session_path')}")
             
             # Verify unlock worked
+            logging.info('Syncing vault...')
             verify = subprocess.run([self.bw_cmd, 'sync'], capture_output=True, text=True)
             logging.debug(f"Sync result: {verify.stdout}")
             return verify.returncode == 0
