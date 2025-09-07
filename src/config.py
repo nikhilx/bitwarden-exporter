@@ -5,15 +5,18 @@ import getpass
 
 class Config:
     def __init__(self, config_path='config.ini'):
-        logging.debug(f"Loading config from: {config_path}")
+        # Get the directory where the script is located
+        script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.config_path = os.path.join(script_dir, config_path)
+        logging.debug(f"Loading config from: {self.config_path}")
 
         self.config = configparser.ConfigParser()
         self._cached_master_password = None
-        if os.path.exists(config_path):
-            self.config.read(config_path)
+        if os.path.exists(self.config_path):
+            self.config.read(self.config_path)
             logging.debug("Config loaded successfully")
         else:
-            logging.warning(f"Config file not found: {config_path}. Prompting for credentials.")
+            logging.warning(f"Config file not found: {self.config_path}. Prompting for credentials.")
             self.config['bitwarden'] = {}
 
         self._ensure_credentials()
