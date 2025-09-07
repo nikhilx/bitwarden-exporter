@@ -50,15 +50,18 @@ class BitwardenAuth:
                 return False
 
             # Then unlock to get session key
+            password = self.config.get_master_password()
+            logging.debug("Attempting to unlock vault with provided password")
             unlock_result = subprocess.run(
                 [self.bw_cmd, 'unlock', '--raw'],
-                input=f"{self.config.get('master_password', '')}\n",
+                input=f"{password}\n",
                 capture_output=True,
                 text=True
             )
 
             if unlock_result.returncode != 0:
                 logging.error(f"Unlock failed: {unlock_result.stderr}")
+                logging.debug(f"Unlock output: {unlock_result.stdout}")
                 return False
 
             # Save and set session

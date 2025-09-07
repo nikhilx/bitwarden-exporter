@@ -8,6 +8,7 @@ class Config:
         logging.debug(f"Loading config from: {config_path}")
 
         self.config = configparser.ConfigParser()
+        self._cached_master_password = None
         if os.path.exists(config_path):
             self.config.read(config_path)
             logging.debug("Config loaded successfully")
@@ -22,8 +23,13 @@ class Config:
             self.config['bitwarden']['client_id'] = input("Enter Bitwarden client ID: ")
         if 'client_secret' not in self.config['bitwarden']:
             self.config['bitwarden']['client_secret'] = getpass.getpass("Enter Bitwarden client secret: ")
-        if 'master_password' not in self.config['bitwarden']:
-            self.config['bitwarden']['master_password'] = getpass.getpass("Enter Bitwarden master password: ")
+
+    def get_master_password(self):
+        if self._cached_master_password is None:
+            logging.info("Waiting for master password input...")
+            self._cached_master_password = getpass.getpass("Enter Bitwarden master password: ")
+            logging.debug("Master password received")
+        return self._cached_master_password
 
     def get(self, key, default=None):
         return self.config['bitwarden'].get(key, default)

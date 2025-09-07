@@ -41,12 +41,10 @@ class BitwardenExporter:
         os.makedirs(output_dir, exist_ok=True)
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         file_extension = FORMAT_EXTENSION_MAP[format_type]
-        encrypt_password = self.config.get('encrypted_json_password')
 
         if format_type == ExportFormat.PASSWORD_ENCRYPTED_JSON:
             suffix = '_password_encrypted'
-            if not encrypt_password:
-                encrypt_password = getpass.getpass("Enter encryption password:")
+            encrypt_password = getpass.getpass("Enter encryption password for the exported file: ")
         elif format_type == ExportFormat.ACCOUNT_ENCRYPTED_JSON:
             suffix = '_account_encrypted'
         else:
@@ -70,11 +68,8 @@ class BitwardenExporter:
                 text=True
             )
             
-            master_password = self.config.get('master_password')
-            if not master_password:
-                master_password = getpass.getpass("Enter master password: ")
-            
-            stdout, stderr = process.communicate(input=f"{master_password}\n")
+            master_password = self.config.get_master_password()
+            _, stderr = process.communicate(input=f"{master_password}\n")
             
             if process.returncode == 0:
                 logging.info(f"Export successful: {output_file}")
